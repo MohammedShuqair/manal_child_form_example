@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>نموذج بيانات الأيتام</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #f5f5f7;
+      --card-bg: #ffffff;
+      --primary: #2563eb;
+      --primary-soft: #e0edff;
+      --border: #d1d5db;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --danger: #b91c1c;
+      --radius-lg: 12px;
+      --radius-sm: 6px;
+      --shadow-soft: 0 8px 20px rgba(15, 23, 42, 0.08);
+      --spacing: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #e5f0ff, #f9fafb 60%);
+      color: var(--text-main);
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 24px auto 48px;
+      padding: 0 16px 32px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      gap: 8px;
+    }
+
+    .header-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .header-subtitle {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--primary-soft);
+      color: #1e3a8a;
+      font-size: 0.8rem;
+    }
+
+    .badge-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--primary);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(260px, 1.2fr);
+      gap: 20px;
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-soft);
+      padding: 20px;
+    }
+
+    .card + .card {
+      margin-top: 16px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 12px;
+      gap: 8px;
+    }
+
+    .card-title {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .card-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    label {
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .required::after {
+      content: " *";
+      color: var(--danger);
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    select,
+    textarea {
+      font: inherit;
+      padding: 8px 10px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background-color: #f9fafb;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--primary);
+      background-color: #ffffff;
+      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.2);
+    }
+
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    .helper-text {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .pill-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .pill-option {
+      position: relative;
+    }
+
+    .pill-option input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .pill-option label {
+      cursor: pointer;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      background: #f9fafb;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .pill-option input:checked + label {
+      border-color: var(--primary);
+      background: var(--primary-soft);
+      color: #1e3a8a;
+    }
+
+    .pill-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--border);
+    }
+
+    .pill-option input:checked + label .pill-dot {
+      background: var(--primary);
+    }
+
+    .section-divider {
+      margin: 16px 0;
+      height: 1px;
+      background: linear-gradient(to left, transparent, #e5e7eb, transparent);
+    }
+
+    .side-panel-title {
+      font-weight: 600;
+      margin-bottom: 12px;
+      font-size: 0.95rem;
+    }
+
+    .steps {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 16px;
+    }
+
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 8px 0;
+    }
+
+    .step-index {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      background: #f9fafb;
+    }
+
+    .step--active .step-index {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #ffffff;
+    }
+
+    .step-label-main {
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .step-label-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .side-note {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      background: #f3f4f6;
+      border: 1px dashed var(--border);
+    }
+
+    .form-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .form-footer-left {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .btn {
+      border: none;
+      border-radius: 999px;
+      padding: 8px 16px;
+      font: inherit;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text-main);
+      border: 1px solid var(--border);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .danger-note {
+      color: var(--danger);
+      font-size: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <div>
+        <div class="header-title">إدخال بيانات يتيم جديد</div>
+        <div class="header-subtitle">
+          هذه الشاشة مخصصة للموظف لإدخال بيانات الطفل الأساسية قبل الانتقال لباقي الأقسام.
+        </div>
+      </div>
+      <div class="badge">
+        <span class="badge-dot"></span>
+        قسم 1 من 6: بيانات الطفل
+      </div>
+    </header>
+
+    <form class="layout">
+      <!-- MAIN FORM COLUMN -->
+      <div>
+        <!-- Card: Basic child info -->
+        <section class="card">
+          <div class="card-header">
+            <div class="card-title">البيانات الشخصية</div>
+            <div class="card-subtitle">الاسم والهوية والجنس ومكان وتاريخ الميلاد</div>
+          </div>
+
+          <!-- Full name in Arabic -->
+          <div class="form-grid" style="margin-bottom: 8px;">
+            <div class="form-group">
+              <label class="required" for="firstNameAr">اسم الطفل</label>
+              <input id="firstNameAr" name="first_name_ar" type="text" autocomplete="off" />
+            </div>
+            <div class="form-group">
+              <label class="required" for="fatherNameAr">اسم الأب</label>
+              <input id="fatherNameAr" name="father_name_ar" type="text" autocomplete="off" />
+            </div>
+            <div class="form-group">
+              <label class="required" for="grandNameAr">اسم الجد</label>
+              <input id="grandNameAr" name="grand_name_ar" type="text" autocomplete="off" />
+            </div>
+            <div class="form-group">
+              <label class="required" for="familyNameAr">اسم العائلة</label>
+              <input id="familyNameAr" name="family_name_ar" type="text" autocomplete="off" />
+            </div>
+          </div>
+          <p class="helper-text">
+            الرجاء استخدام الاسم الرباعي كما هو مذكور في الوثائق الرسمية إن أمكن.
+          </p>
+
+          <div class="section-divider"></div>
+
+          <!-- English name (optional) -->
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label for="fullNameEn">الاسم الكامل (بالإنجليزية) <span class="helper-text">(اختياري)</span></label>
+            <input id="fullNameEn" name="full_name_en" type="text" autocomplete="off" placeholder="Full name in English (optional)" />
+          </div>
+
+          <!-- ID + Gender + Birth info -->
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="required" for="nationalId">رقم الهوية / الرقم القومي</label>
+              <input id="nationalId" name="national_id" type="text" inputmode="numeric" />
+              <span class="helper-text">أدخل الرقم كما في الهوية بدون فواصل.</span>
+            </div>
+
+            <div class="form-group">
+              <label class="required">الجنس</label>
+              <div class="pill-group">
+                <div class="pill-option">
+                  <input type="radio" id="genderMale" name="gender" value="male" />
+                  <label for="genderMale">
+                    <span class="pill-dot"></span> ذكر
+                  </label>
+                </div>
+                <div class="pill-option">
+                  <input type="radio" id="genderFemale" name="gender" value="female" />
+                  <label for="genderFemale">
+                    <span class="pill-dot"></span> أنثى
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="required" for="birthPlace">مكان الميلاد</label>
+              <input id="birthPlace" name="birth_place" type="text" autocomplete="off" />
+            </div>
+
+            <div class="form-group">
+              <label class="required" for="birthDate">تاريخ الميلاد</label>
+              <input id="birthDate" name="birth_date" type="date" />
+              <span class="helper-text">التنسيق: يوم / شهر / سنة</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Card: Education -->
+        <section class="card">
+          <div class="card-header">
+            <div class="card-title">التعليم</div>
+            <div class="card-subtitle">هل يواصل تعليمه؟ المرحلة والمعدل.</div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 8px;">
+            <label class="required">هل يواصل دراسته؟</label>
+            <div class="pill-group">
+              <div class="pill-option">
+                <input type="radio" id="studyYes" name="is_studying" value="yes" />
+                <label for="studyYes"><span class="pill-dot"></span> نعم</label>
+              </div>
+              <div class="pill-option">
+                <input type="radio" id="studyNo" name="is_studying" value="no" />
+                <label for="studyNo"><span class="pill-dot"></span> لا</label>
+              </div>
+              <div class="pill-option">
+                <input type="radio" id="studyUnknown" name="is_studying" value="unknown" />
+                <label for="studyUnknown"><span class="pill-dot"></span> غير معروف</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="studyLevel">المرحلة الدراسية الحالية</label>
+              <select id="studyLevel" name="study_level">
+                <option value="">اختر...</option>
+                <option value="none">لا يدرس حاليًا</option>
+                <option value="primary">ابتدائي</option>
+                <option value="preparatory">إعدادي</option>
+                <option value="secondary">ثانوي</option>
+                <option value="university">جامعة</option>
+                <option value="other">أخرى</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="studyClass">الصف / المستوى</label>
+              <input id="studyClass" name="study_class" type="text" placeholder="مثال: خامس، تاسع، أول ثانوي..." />
+            </div>
+
+            <div class="form-group">
+              <label for="lastGrade">معدل آخر سنة / آخر مستوى</label>
+              <input id="lastGrade" name="last_grade" type="text" placeholder="مثال: 85% أو جيد جداً" />
+            </div>
+          </div>
+        </section>
+
+        <!-- Card: Health + Orphan status + Other info -->
+        <section class="card">
+          <div class="card-header">
+            <div class="card-title">الحالة الصحية وحالة اليُتم</div>
+            <div class="card-subtitle">معلومات مختصرة الآن مع إمكانية التوسع لاحقًا.</div>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="required">الحالة الصحية العامة</label>
+              <div class="pill-group">
+                <div class="pill-option">
+                  <input type="radio" id="healthGood" name="health_status" value="good" />
+                  <label for="healthGood"><span class="pill-dot"></span> جيدة</label>
+                </div>
+                <div class="pill-option">
+                  <input type="radio" id="healthNeedsFollow" name="health_status" value="needs_follow_up" />
+                  <label for="healthNeedsFollow"><span class="pill-dot"></span> تحتاج متابعة</label>
+                </div>
+                <div class="pill-option">
+                  <input type="radio" id="healthUnknown" name="health_status" value="unknown" />
+                  <label for="healthUnknown"><span class="pill-dot"></span> غير معروف</label>
+                </div>
+              </div>
+              <span class="helper-text">
+                عند الحاجة يمكن إضافة تفاصيل أكثر لاحقًا (إعاقة، أمراض مزمنة، إلخ).
+              </span>
+            </div>
+
+            <div class="form-group">
+              <label class="required">يتيم بسبب</label>
+              <div class="pill-group">
+                <div class="pill-option">
+                  <input type="radio" id="orphanDad" name="orphan_by" value="dad" />
+                  <label for="orphanDad"><span class="pill-dot"></span> وفاة الأب</label>
+                </div>
+                <div class="pill-option">
+                  <input type="radio" id="orphanMom" name="orphan_by" value="mom" />
+                  <label for="orphanMom"><span class="pill-dot"></span> وفاة الأم</label>
+                </div>
+                <div class="pill-option">
+                  <input type="radio" id="orphanBoth" name="orphan_by" value="both" />
+                  <label for="orphanBoth"><span class="pill-dot"></span> وفاة الوالدين</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-divider"></div>
+
+          <div class="form-group">
+            <label for="otherInfo">ملاحظات أخرى عن الطفل</label>
+            <textarea id="otherInfo" name="other_info" placeholder="أي معلومات إضافية: الظروف الاجتماعية، المسؤول الحالي عن الطفل، ملاحظات مهمة للفريق..."></textarea>
+          </div>
+        </section>
+
+        <!-- Footer actions -->
+        <div class="form-footer">
+          <div class="form-footer-left">
+            <span class="danger-note">* الحقول الإلزامية مطلوبة قبل المتابعة.</span>
+          </div>
+          <div>
+            <button type="button" class="btn btn-outline">
+              حفظ كمسودة
+            </button>
+            <button type="submit" class="btn btn-primary">
+              التالي ➜
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SIDE PANEL COLUMN -->
+      <aside>
+        <div class="card">
+          <div class="side-panel-title">أقسام بيانات اليتيم</div>
+          <ul class="steps">
+            <li class="step step--active">
+              <div class="step-index">1</div>
+              <div>
+                <div class="step-label-main">بيانات الطفل</div>
+                <div class="step-label-sub">الاسم، الهوية، الميلاد، الحالة الصحية، حالة اليُتم.</div>
+              </div>
+            </li>
+            <li class="step">
+              <div class="step-index">2</div>
+              <div>
+                <div class="step-label-main">بيانات ولي الأمر / الكفيل</div>
+                <div class="step-label-sub">يتم تفعيلها بعد حفظ هذا القسم.</div>
+              </div>
+            </li>
+            <li class="step">
+              <div class="step-index">3</div>
+              <div>
+                <div class="step-label-main">العنوان والتواصل</div>
+              </div>
+            </li>
+            <li class="step">
+              <div class="step-index">4</div>
+              <div>
+                <div class="step-label-main">الوضع الاجتماعي والأسري</div>
+              </div>
+            </li>
+            <li class="step">
+              <div class="step-index">5</div>
+              <div>
+                <div class="step-label-main">الدعم المالي / الرعائي</div>
+              </div>
+            </li>
+            <li class="step">
+              <div class="step-index">6</div>
+              <div>
+                <div class="step-label-main">مراجعة وحفظ نهائي</div>
+              </div>
+            </li>
+          </ul>
+
+          <div class="side-note">
+            هذه الشاشة مصممة لاستخدام الموظف:  
+            <br />
+            • الحقول الأساسية فقط في هذا القسم.  
+            <br />
+            • يمكنك حفظ البيانات كمسودة وإكمال الأقسام الأخرى لاحقًا.
+          </div>
+        </div>
+      </aside>
+    </form>
+  </div>
+</body>
+</html>
